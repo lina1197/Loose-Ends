@@ -1,0 +1,74 @@
+[
+  {
+    "message_id": "msg-001",
+    "sender": "alice",
+    "recipient": "bob",
+    "timestamp": "2027-09-01T09:00:00+00:00",
+    "content": "Hi Bob, can you please send me the Q3 financial report by end of Friday? We need it for the board presentation on Monday.",
+    "conversation_id": "conv-q3-report"
+  },
+  {
+    "message_id": "msg-002",
+    "sender": "bob",
+    "recipient": "alice",
+    "timestamp": "2027-09-01T09:20:00+00:00",
+    "content": "Sure Alice, I promise I will have the Q3 report ready and sent over to you by Friday at 5 pm. Count on it.",
+    "conversation_id": "conv-q3-report"
+  },
+  {
+    "message_id": "msg-003",
+    "sender": "alice",
+    "recipient": "bob",
+    "timestamp": "2027-09-02T14:00:00+00:00",
+    "content": "Hi Bob, just following up on the Q3 report. Are you still on track to deliver it by Friday? Let me know if you need anything.",
+    "conversation_id": "conv-q3-report"
+  },
+  {
+    "message_id": "msg-004",
+    "sender": "bob",
+    "recipient": "alice",
+    "timestamp": "2027-09-03T11:00:00+00:00",
+    "content": "Still on track, Alice. I am finalizing the numbers now and will send the Q3 report before 5 pm Friday as promised.",
+    "conversation_id": "conv-q3-report"
+  },
+  {
+    "message_id": "msg-005",
+    "sender": "carol",
+    "recipient": "dave",
+    "timestamp": "2027-09-03T10:00:00+00:00",
+    "content": "Dave, once QA gives the green light on the build, can you commit to deploying the hotfix to production? We are blocked until it is live.",
+    "conversation_id": "conv-hotfix-deploy"
+  },
+  {
+    "message_id": "msg-006",
+    "sender": "dave",
+    "recipient": "carol",
+    "timestamp": "2027-09-03T10:45:00+00:00",
+    "content": "Yes Carol, I promise to deploy the hotfix within two hours once QA approves. I am waiting on them before I can proceed.",
+    "conversation_id": "conv-hotfix-deploy"
+  },
+  {
+    "message_id": "msg-007",
+    "sender": "qa-team",
+    "recipient": "dave",
+    "timestamp": "2027-09-03T14:30:00+00:00",
+    "content": "Dave, QA has approved the build. The dependency is resolved and you are clear to deploy the hotfix to production.",
+    "conversation_id": "conv-hotfix-deploy"
+  },
+  {
+    "message_id": "msg-008",
+    "sender": "dave",
+    "recipient": "carol",
+    "timestamp": "2027-09-03T14:45:00+00:00",
+    "content": "Carol, QA approval is in. Deploying the hotfix to production now. Should be live within the hour.",
+    "conversation_id": "conv-hotfix-deploy"
+  },
+  {
+    "message_id": "msg-009",
+    "sender": "eve",
+    "recipient": "frank",
+    "timestamp": "2027-09-04T08:00:00+00:00",
+    "content": "Frank, can you review and sign off on the partnership agreement today? Legal needs it before end of business.",
+    "conversation_id": "conv-partnership"
+  }
+]

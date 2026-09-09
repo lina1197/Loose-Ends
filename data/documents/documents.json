@@ -1,0 +1,38 @@
+[
+  {
+    "document_id": "doc-q3-figures",
+    "filename": "Q3_financial_figures.xlsx",
+    "title": "Q3 Financial Figures",
+    "document_type": "financial",
+    "content": "DEMO DATA -- FOR ILLUSTRATION PURPOSES ONLY. ALL FIGURES ARE FICTIONAL.\n\nQ3 2027 Financial Summary (Acme Corp -- Internal Use)\n\nRevenue\n  Product sales:    $28,400,000\n  Services:         $14,300,000\n  Total revenue:    $42,700,000  (+12% YoY)\n\nCost of Goods Sold: $19,100,000\nGross Profit:       $23,600,000  (gross margin 55.3%)\n\nOperating Expenses\n  R&D:              $ 6,200,000\n  Sales & Marketing:$ 5,800,000\n  G&A:              $ 3,300,000\n  Total OpEx:       $15,300,000\n\nOperating Income:   $ 8,300,000\nInterest & Other:   $   200,000\nPre-tax Income:     $ 8,500,000\nIncome Tax (28%):   $ 2,380,000\nNet Income:         $ 6,120,000\n\nEBITDA:             $10,200,000\nFree Cash Flow:     $ 7,850,000\nCash & Equivalents: $28,500,000\n\nKey Metrics\n  Headcount (EOP):  342\n  ARR:              $54,000,000  (+18% YoY)\n  NRR:              112%\n  CAC:              $4,200\n  LTV/CAC:          5.8x\n\nNote: Figures are preliminary and subject to audit sign-off.\nPrepared by: Finance Team\nDate: 2027-09-01",
+    "created_at": "2027-09-01T08:00:00+00:00",
+    "updated_at": "2027-09-01T08:00:00+00:00"
+  },
+  {
+    "document_id": "doc-q3-board-deck",
+    "filename": "Q3_board_presentation.pptx",
+    "title": "Q3 Board Presentation Deck",
+    "document_type": "presentation",
+    "content": "DEMO DATA -- FOR ILLUSTRATION PURPOSES ONLY.\n\nSlide 1: Q3 2027 Business Update -- Acme Corp\n\nSlide 2: Highlights\n  - Revenue of $42.7M, up 12% year-over-year\n  - Net Income of $6.1M, strongest quarter in company history\n  - ARR reached $54M, growing at 18% annually\n  - Three major enterprise wins: GlobalBank, NovaTech, and CityLogistics\n\nSlide 3: Revenue Breakdown by Segment\n  Product: 66.5% | Services: 33.5%\n  Fastest-growing region: APAC (+34% QoQ)\n\nSlide 4: Outlook\n  Q4 guidance: Revenue $45M-$47M\n  FY2027 guidance: Revenue $165M-$168M\n\nPrepared for: Board of Directors meeting, 2027-09-08",
+    "created_at": "2027-09-05T10:00:00+00:00",
+    "updated_at": "2027-09-06T14:30:00+00:00"
+  },
+  {
+    "document_id": "doc-remote-work-policy",
+    "filename": "Remote_Work_Policy_2027.pdf",
+    "title": "Remote Work Policy 2027",
+    "document_type": "policy",
+    "content": "DEMO DATA -- FOR ILLUSTRATION PURPOSES ONLY.\n\nRemote Work Policy -- Acme Corp\nEffective: 2027-01-01 | Reviewed: 2027-08-15\n\n1. Eligibility\n   All full-time employees who have completed their 90-day onboarding\n   period are eligible to apply for remote or hybrid work arrangements.\n\n2. Core Hours\n   Employees must be available and responsive between 10:00 and 15:00\n   in their team's primary time zone, Monday through Friday.\n\n3. Equipment\n   Acme provides a standard laptop and peripherals. A one-time home-office\n   stipend of $800 is available for eligible employees.\n\n4. Security\n   All remote work must use the company VPN. Personal devices may not\n   be used for accessing internal systems without prior IT approval.\n\n5. Review\n   Remote arrangements are reviewed annually. Managers may request\n   additional in-office days for onboarding, team sprints, or client visits.\n\nApproved by: People & Culture\nDate: 2027-08-15",
+    "created_at": "2027-08-15T09:00:00+00:00",
+    "updated_at": "2027-08-15T09:00:00+00:00"
+  },
+  {
+    "document_id": "doc-security-audit-checklist",
+    "filename": "Security_Audit_Checklist_Q3_2027.pdf",
+    "title": "Security Audit Checklist Q3 2027",
+    "document_type": "checklist",
+    "content": "DEMO DATA -- FOR ILLUSTRATION PURPOSES ONLY.\n\nQuarterly Security Audit Checklist -- Q3 2027\nCompleted by: IT Security Team\nDate: 2027-08-31\n\nAccess Controls\n  [x] MFA enforced for all production systems\n  [x] Privileged access reviewed and reduced\n  [x] Stale accounts deprovisioned (14 accounts removed)\n\nInfrastructure\n  [x] OS patches applied to all servers (100% coverage)\n  [x] SSL certificates renewed (3 renewed, none expired)\n  [x] Firewall rules reviewed; 2 stale rules removed\n\nData\n  [x] Backup integrity tests passed for all critical databases\n  [x] Encryption at rest confirmed for S3 buckets and RDS instances\n  [x] PII data map updated\n\nIncident Response\n  [x] Incident response runbook reviewed and updated\n  [x] On-call rotation confirmed and tested\n\nFindings\n  LOW: One internal tool running an outdated library version. Ticket raised.\n  NONE: No high or critical findings this quarter.\n\nStatus: PASSED",
+    "created_at": "2027-08-31T17:00:00+00:00",
+    "updated_at": "2027-08-31T17:00:00+00:00"
+  }
+]

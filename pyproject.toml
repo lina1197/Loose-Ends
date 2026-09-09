@@ -1,0 +1,22 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "loose-ends"
+version = "0.1.0"
+description = "AI commitment-management agent (hackathon)"
+requires-python = ">=3.10"
+dependencies = [
+    "strands-agents[gemini]>=1.54.0",
+    "python-dotenv>=1.0.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0.0",
+]
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["loose_ends*"]
