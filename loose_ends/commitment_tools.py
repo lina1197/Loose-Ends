@@ -272,3 +272,88 @@ def update_commitment(
             "status": commitment.status.value,
         }
     )
+
+
+# ---------------------------------------------------------------------------
+# prepare_response
+# ---------------------------------------------------------------------------
+
+@tool
+def prepare_response(
+    commitment_id: str,
+    draft_content: str,
+) -> str:
+    """Prepare a draft response for a READY_TO_ACT commitment.
+    
+    This creates a clearly labelled DRAFT for human approval.
+    It does NOT send anything.
+    It does NOT mark commitments completed or change their status.
+    
+    Args:
+        commitment_id: ID of the commitment to prepare a response for.
+        draft_content: The proposed response text.
+        
+    Returns:
+        A JSON string confirming the draft was recorded.
+    """
+    commitment = commitment_store.get(commitment_id)
+    if commitment is None:
+        return json.dumps(
+            {"error": f"Commitment {commitment_id!r} not found in the store."}
+        )
+
+    if commitment.status != CommitmentStatus.READY_TO_ACT:
+        return json.dumps(
+            {"error": f"Commitment {commitment_id!r} is not READY_TO_ACT."}
+        )
+
+    formatted_draft = f"[DRAFT] {draft_content}"
+    commitment_store.set_draft(commitment_id, formatted_draft)
+
+    return json.dumps(
+        {
+            "status": "DRAFT_PENDING_APPROVAL",
+            "commitment_id": commitment_id,
+            "draft_content": formatted_draft,
+            "message": "Draft recorded. Human approval required before sending.",
+        }
+    )
+
+
+# ---------------------------------------------------------------------------
+# mark_completed
+# ---------------------------------------------------------------------------
+
+@tool
+def mark_completed(commitment_id: str) -> str:
+    """Mark a commitment as COMPLETED following explicit approval.
+
+    Locates the commitment in commitment_store and transitions its status
+    to COMPLETED using the domain model's state machine.
+
+    Args:
+        commitment_id: ID of the commitment to complete (required).
+
+    Returns:
+        A JSON string containing:
+            commitment_id - ID of the completed commitment
+            status        - 'COMPLETED'
+        On error, returns a JSON string with an "error" key.
+    """
+    commitment = commitment_store.get(commitment_id)
+    if commitment is None:
+        return json.dumps(
+            {"error": f"Commitment {commitment_id!r} not found in the store."}
+        )
+
+    try:
+        commitment.transition_to(CommitmentStatus.COMPLETED)
+    except InvalidTransitionError as exc:
+        return json.dumps({"error": str(exc)})
+
+    return json.dumps(
+        {
+            "commitment_id": commitment.id,
+            "status": commitment.status.value,
+        }
+    )

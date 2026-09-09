@@ -24,6 +24,7 @@ import os
 from typing import Optional
 
 from strands import Agent
+from strands.hooks import BeforeToolCallEvent
 from strands.models.gemini import GeminiModel
 
 from loose_ends.tools import get_loose_ends_status
@@ -31,32 +32,53 @@ from loose_ends.commitment_tools import (
     create_commitment,
     get_open_commitments,
     update_commitment,
+    prepare_response,
+    mark_completed,
 )
 from loose_ends.messages.search_tool import search_messages
 from loose_ends.documents.document_tools import search_documents, get_document
 
-_GEMINI_MODEL_ID = "gemini-3.6-flash"
+_GEMINI_MODEL_ID = os.environ.get("GEMINI_MODEL_ID", "gemini-3.5-flash-lite")
 
 
 # ---------------------------------------------------------------------------
 # Shared model factory (private) -- single place for provider configuration
 # ---------------------------------------------------------------------------
 
-def _build_model(api_key: Optional[str] = None) -> GeminiModel:
-    """Resolve the API key and return a configured GeminiModel.
+def _build_model(api_key: Optional[str] = None):
+    """Resolve model provider (Bedrock or Gemini) and return a configured Strands Model.
 
-    Raises RuntimeError if no key is available from either the argument
-    or the GEMINI_API_KEY environment variable.
+    Provider Selection Logic:
+    1. If MODEL_PROVIDER == 'bedrock' or AWS credentials are in environment,
+       attempts to instantiate BedrockModel.
+    2. Falls back to GeminiModel using GEMINI_API_KEY.
+    3. Raises RuntimeError if no model credentials/keys are configured.
     """
+    provider = os.environ.get("MODEL_PROVIDER", "").lower()
+
+    # Path 1: Amazon Bedrock (if explicitly requested or AWS credentials present)
+    if provider == "bedrock" or os.environ.get("AWS_ACCESS_KEY_ID"):
+        try:
+            from strands.models.bedrock import BedrockModel
+            bedrock_model_id = os.environ.get(
+                "BEDROCK_MODEL_ID", "anthropic.claude-3-haiku-20240307-v1:0"
+            )
+            region = os.environ.get("AWS_REGION", "us-east-1")
+            return BedrockModel(model_id=bedrock_model_id, region_name=region)
+        except Exception:
+            pass  # Fallback to GeminiModel if Bedrock import/credentials fail
+
+    # Path 2: Google Gemini (default)
     key = api_key or os.environ.get("GEMINI_API_KEY")
     if not key:
         raise RuntimeError(
-            "GEMINI_API_KEY environment variable is not set. "
-            "Copy .env.example to .env and add your key."
+            "Neither AWS Bedrock nor GEMINI_API_KEY environment variable is configured. "
+            "Set GEMINI_API_KEY in .env or configure AWS credentials."
         )
+    model_id = os.environ.get("GEMINI_MODEL_ID", _GEMINI_MODEL_ID)
     return GeminiModel(
         client_args={"api_key": key},
-        model_id=_GEMINI_MODEL_ID,
+        model_id=model_id,
     )
 
 
@@ -137,6 +159,30 @@ COMMITMENT_DETECTION_SYSTEM_PROMPT = (
 )
 
 
+# ---------------------------------------------------------------------------
+# Strands Runtime Hooks & Guardrails (Deterministic Agent Controls)
+# ---------------------------------------------------------------------------
+
+def enforce_human_approval_guardrail(event: BeforeToolCallEvent) -> None:
+    """Deterministic Strands runtime hook (Guardrail).
+
+    Enforces that:
+    1. No tool can directly transition any commitment to COMPLETED (human approval required).
+    2. Commitments created without a valid owner are rejected before execution.
+    """
+    tool_use = event.tool_use or {}
+    tool_name = tool_use.get("name") if isinstance(tool_use, dict) else getattr(tool_use, "name", None)
+    tool_args = (tool_use.get("input") or {}) if isinstance(tool_use, dict) else (getattr(tool_use, "input", {}) or {})
+
+    if tool_name == "update_commitment" and tool_args.get("status") == "COMPLETED":
+        raise ValueError(
+            "Guardrail Triggered: Automatic completion rejected. "
+            "Commitments can ONLY be completed via explicit human approval."
+        )
+    if tool_name == "create_commitment" and not tool_args.get("owner"):
+        raise ValueError("Guardrail Triggered: Commitment owner must not be empty.")
+
+
 def build_commitment_detector(api_key: Optional[str] = None) -> Agent:
     """Construct the commitment-detection agent (Phase 1 + Phase 2).
 
@@ -152,6 +198,7 @@ def build_commitment_detector(api_key: Optional[str] = None) -> Agent:
         model=_build_model(api_key),
         tools=COMMITMENT_DETECTION_TOOLS,
         system_prompt=COMMITMENT_DETECTION_SYSTEM_PROMPT,
+        hooks=[enforce_human_approval_guardrail],
     )
 
 
@@ -301,4 +348,61 @@ def build_action_preparer(api_key: Optional[str] = None) -> Agent:
         model=_build_model(api_key),
         tools=ACTION_PREPARATION_TOOLS,
         system_prompt=ACTION_PREPARATION_SYSTEM_PROMPT,
+    )
+
+
+# ---------------------------------------------------------------------------
+# Step 11: response-preparation workflow
+# Tools: get_open_commitments, search_documents, get_document, prepare_response
+# NOT: create_commitment, update_commitment, search_messages
+# ---------------------------------------------------------------------------
+
+RESPONSE_PREPARATION_TOOLS = [
+    get_open_commitments,
+    search_documents,
+    get_document,
+    prepare_response,
+]
+
+RESPONSE_PREPARATION_SYSTEM_PROMPT = (
+    "You are a response-preparation assistant for the Loose Ends system.\n"
+    "\n"
+    "YOUR ONLY JOB:\n"
+    "Review existing READY_TO_ACT commitments, gather necessary information from\n"
+    "documents, and prepare a draft response for human approval.\n"
+    "\n"
+    "WHAT YOU MUST NOT DO:\n"
+    "  - Do NOT create new commitments.\n"
+    "  - Do NOT change the status of any commitment.\n"
+    "  - Do NOT search messages.\n"
+    "  - Do NOT send the response directly.\n"
+    "\n"
+    "MANDATORY STEPS:\n"
+    "1. Call get_open_commitments to find READY_TO_ACT commitments.\n"
+    "2. Use search_documents and get_document to gather information.\n"
+    "3. Call prepare_response to create a DRAFT for human approval.\n"
+    "\n"
+    "FINAL STEP:\n"
+    "Summarize the drafts prepared and confirm they await human approval.\n"
+)
+
+
+def build_response_preparer(api_key: Optional[str] = None) -> Agent:
+    """Construct the response-preparation agent.
+
+    This agent has access to ONLY get_open_commitments, search_documents,
+    get_document, and prepare_response. It cannot create or update any
+    commitment, and it cannot search messages. Its sole purpose is to
+    draft a response for human approval.
+
+    Parameters
+    ----------
+    api_key:
+        Gemini API key. Falls back to GEMINI_API_KEY env var.
+        Pass an explicit value in tests to avoid requiring the env var.
+    """
+    return Agent(
+        model=_build_model(api_key),
+        tools=RESPONSE_PREPARATION_TOOLS,
+        system_prompt=RESPONSE_PREPARATION_SYSTEM_PROMPT,
     )

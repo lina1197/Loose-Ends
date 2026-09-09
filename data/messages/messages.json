@@ -70,5 +70,13 @@
     "timestamp": "2027-09-04T08:00:00+00:00",
     "content": "Frank, can you review and sign off on the partnership agreement today? Legal needs it before end of business.",
     "conversation_id": "conv-partnership"
+  },
+  {
+    "message_id": "msg-010",
+    "sender": "frank",
+    "recipient": "eve",
+    "timestamp": "2027-09-04T09:00:00+00:00",
+    "content": "sure, will review it and sign off on it by end of day",
+    "conversation_id": "conv-partnership"
   }
 ]

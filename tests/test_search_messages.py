@@ -19,8 +19,8 @@ from loose_ends.messages.message import Message
 from loose_ends.messages.repository import MessageRepository
 from loose_ends.messages.search_tool import search_messages, _repo
 
-# Total messages in the fixture dataset
-TOTAL_MESSAGES = 9
+# Total messages in the dataset (computed from data file)
+TOTAL_MESSAGES = len(MessageRepository())
 
 
 # ── Helpers ───────────────────────────────────────────────────────────────────

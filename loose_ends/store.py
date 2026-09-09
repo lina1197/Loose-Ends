@@ -15,6 +15,21 @@ class _InMemoryCommitmentStore:
 
     def __init__(self) -> None:
         self._data: dict[str, Commitment] = {}
+        self._drafts: dict[str, str] = {}
+
+    # ── Drafts ─────────────────────────────────────────────────────────────
+
+    def set_draft(self, commitment_id: str, draft_text: str) -> None:
+        """Store a response draft for a commitment."""
+        self._drafts[commitment_id] = draft_text
+
+    def get_draft(self, commitment_id: str) -> Optional[str]:
+        """Retrieve a stored response draft for a commitment."""
+        return self._drafts.get(commitment_id)
+
+    def remove_draft(self, commitment_id: str) -> None:
+        """Remove a response draft for a commitment."""
+        self._drafts.pop(commitment_id, None)
 
     # ── Write ──────────────────────────────────────────────────────────────
 
@@ -37,6 +52,7 @@ class _InMemoryCommitmentStore:
     def clear(self) -> None:
         """Remove every stored commitment.  Intended for test teardown."""
         self._data.clear()
+        self._drafts.clear()
 
     def __len__(self) -> int:
         return len(self._data)
