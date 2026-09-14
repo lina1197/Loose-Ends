@@ -5,17 +5,17 @@
 [![Strands SDK](https://img.shields.io/badge/Strands%20SDK-Model--Agnostic-blue)](#strands-agents-sdk-features)
 [![AWS Bedrock](https://img.shields.io/badge/AWS%20Bedrock-AgentCore%20%2F%20Lambda-orange)](#deployment--serverless-runtime)
 
-Loose Ends transforms unfulfilled workplace promises scattered across emails, Slack messages, and meeting notes into tracked, verified, and actionable commitments. Using multi-agent steering, runtime guardrails, and evidence-grounded document search, Loose Ends ensures no workplace task falls through the cracks—without making unauthorized changes.
+Loose Ends transforms unfulfilled workplace promises embedded in communication streams and message logs into tracked, verified, and actionable commitments. Built on a deterministic multi-agent foundation using the **Strands Agents SDK**, Loose Ends ensures no workplace task falls through the cracks—without making unauthorized changes.
 
 ---
 
 ## 🏗 Architecture & Agentic Workflow
 
-Loose Ends utilizes specialized Strands agents orchestrated across clear lifecycle phases:
+Loose Ends processes incoming message streams using specialized Strands agents orchestrated across clear lifecycle phases:
 
 ```mermaid
 graph TD
-    A[Unstructured Messages / Slack / Emails] --> B[Phase 1: Commitment Detector Agent]
+    A[Message Streams / Communication Logs] --> B[Phase 1: Commitment Detector Agent]
     B -->|Hooks Guardrail Enforced| C[Commitment Store]
     C --> D[Phase 2: Steering Dependency Resolver]
     D -->|Evidence Verified| E[READY_TO_ACT State]
@@ -52,7 +52,7 @@ def enforce_human_approval_guardrail(event: BeforeToolCallEvent) -> None:
 ```
 
 ### 3. Steering & Dual-Agent Verification ("Buddy Agent")
-- **Phase 1 Agent** detects potential commitments from conversation logs.
+- **Phase 1 Agent** detects potential commitments from message streams.
 - **Steering Agent** inspects blocked dependencies (`WAITING_FOR_DEPENDENCY`) against message logs, transitioning status to `READY_TO_ACT` **only when explicit direct evidence exists**.
 
 ### 4. Scoped Skills & Tools
@@ -63,6 +63,17 @@ Agents are granted strictly scoped tools:
 ### 5. Managed Runtime & Bedrock AgentCore Deployment
 - Entry point [`lambda_function.py`](file:///c:/Users/HP/Desktop/Loose%20Ends/lambda_function.py) acts as an AWS API Gateway proxy handler.
 - Infrastructure defined in [`template.yaml`](file:///c:/Users/HP/Desktop/Loose%20Ends/template.yaml) (AWS SAM / CloudFormation).
+
+---
+
+## 🔮 Product Vision & Roadmap (Post-MVP Evolution)
+
+Loose Ends is designed around a modular tool architecture. While this MVP processes raw message streams and communication logs, future evolutions will connect directly to enterprise productivity suites:
+
+- [x] **MVP Baseline:** Deterministic multi-agent engine, runtime guardrails, evidence verification, and local dashboard.
+- [ ] **Slack & MS Teams Webhooks:** Direct real-time event ingestion for `#commitments` and DM threads.
+- [ ] **Gmail / Outlook Connectors:** Automatic extraction of promises made in email threads.
+- [ ] **Calendar & Task Sync:** Exporting approved commitments to Google Calendar, Jira, and Linear.
 
 ---
 
