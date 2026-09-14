@@ -34,6 +34,7 @@ from loose_ends.agent import (
     build_response_preparer,
 )
 from loose_ends.messages.search_tool import _repo as message_repo
+from loose_ends.messages.message import Message
 from loose_ends.documents.document_tools import _repo as doc_repo
 from loose_ends.server import process_messages_demo, resolve_dependencies_demo
 
@@ -181,7 +182,7 @@ with st.sidebar.expander("💬 Simulate Workplace Message", expanded=False):
             }
             # Append to message repo
             message_repo._messages.append(
-                type("Message", (), new_msg)()
+                Message.from_dict(new_msg)
             )
             # Create commitment deterministically or via agent
             create_commitment(
@@ -346,7 +347,11 @@ with tab_messages:
     
     msgs = message_repo.all()
     for m in msgs:
-        with st.expander(f"💬 [{m.timestamp[:16]}] {m.sender.capitalize()} ➔ {m.recipient.capitalize()} ({m.message_id})"):
+        if isinstance(m.timestamp, datetime):
+            ts_display = m.timestamp.strftime("%Y-%m-%d %H:%M")
+        else:
+            ts_display = str(m.timestamp)[:16]
+        with st.expander(f"💬 [{ts_display}] {m.sender.capitalize()} ➔ {m.recipient.capitalize()} ({m.message_id})"):
             st.write(m.content)
             st.caption(f"Conversation ID: {m.conversation_id}")
 
